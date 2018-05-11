@@ -1,12 +1,12 @@
 <div class="row">
   <div class="col-md-4">
-    <h4>{{userData.welcomeMsg}}</h4>
-    <div ng-show="isLoggedIn">
+    <h4 ng-show="connector.isLoggedIn">{{userData.welcomeMsg}}</h4>
+    <div ng-show="connector.isLoggedIn">
       <a href="{{userData.userInfo.link}}" target="_blank"><img ng-src="{{userData.picture}}"></a>
     </div>
     <br>
     <br><br>
-    <div ng-show="isLoggedIn" class="well">
+    <div ng-show="connector.isLoggedIn" class="well">
       <h4>User Info</h4>
       <ul>
         <li>ID: {{userData.userInfo._id}}</li>
@@ -18,7 +18,7 @@
       </ul>
     </div>
     <br>
-    <div class="well" ng-show="isLoggedIn">
+    <div class="well" ng-show="connector.isLoggedIn">
       <h4>Permissions</h4>
       <ul>
         <li ng-repeat="permission in permissions">{{permission.permission}} - {{permission.status}}</li>
@@ -27,7 +27,7 @@
   </div>
   <div class="col-md-8">
     <h3>Welcome to Facebook!</h3>
-    <div ng-show="isLoggedIn">
+    <div ng-show="connector.isLoggedIn">
       <form ng-submit="postStatus()">
         <div class="form-group">
           <label>Status Update</label>
@@ -46,7 +46,7 @@
           </div>
       </div>
     </div>
-    <div ng-show="isLoggedIn == false">
+    <div ng-show="isLoggedIn == false || connector.isLoggedIn == false">
       <p>You need to login to post</p>
     </div>
   </div>
