@@ -18,7 +18,7 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngCookies'])
     this.refresh = function(_id, callback){
         if($cookies.get('_id')) {
             $http({
-                url: 'http://127.0.0.1:5003/app/getUserInfo',
+                url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/getUserInfo',
                 method: "GET",
                 params: {
                     '_id': $cookies.get('_id')
@@ -48,7 +48,7 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngCookies'])
 	    var username = $scope.username
 	    var password = $scope.password
 	    $http({
-            url: 'http://127.0.0.1:5003/app/authenticate',
+            url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/authenticate',
             method: "GET",
             params: {
                 username: username,
@@ -91,7 +91,7 @@ angular.module('ngSocial.facebook', ['ngRoute', 'ngCookies'])
 		    var post = $scope.body;
 		    var _id = $cookies.get('_id');
             $http({
-                url: 'http://127.0.0.1:5003/app/feed',
+                url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/feed',
                 method: "POST",
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
                 data: "post="+ post+"&_id="+_id
