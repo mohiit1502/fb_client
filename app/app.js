@@ -6,5 +6,5 @@ angular.module('ngSocial', [
   'ngSocial.facebook'
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/login'});
+  $routeProvider.otherwise({redirectTo: '/'});
 }]);

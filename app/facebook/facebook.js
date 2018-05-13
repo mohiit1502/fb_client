@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ngSocial.facebook', ['ngRoute'])
+angular.module('ngSocial.facebook', ['ngRoute', 'ngCookies'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/facebook', {
@@ -11,17 +11,17 @@ angular.module('ngSocial.facebook', ['ngRoute'])
      controller: 'LoginCtrl'
   });
 }])
-.service('refreshService', ['$http', function($http){
+.service('refreshService', ['$http', '$cookies', function($http, $cookies){
     self = this;
     var l2Response = {}
 
     this.refresh = function(_id, callback){
-        if(this.isLoggedIn) {
+        if($cookies.get('_id')) {
             $http({
-                url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/getUserInfo',
+                url: 'http://127.0.0.1:5003/app/getUserInfo',
                 method: "GET",
                 params: {
-                    '_id': _id
+                    '_id': $cookies.get('_id')
                 }
             }).then(function(response) {
                 if(response) {
@@ -41,14 +41,14 @@ angular.module('ngSocial.facebook', ['ngRoute'])
         }
     }
 }])
-.controller('LoginCtrl', ['$scope', '$http', '$window', 'refreshService', function($scope, $http, $window, refreshService) {
+.controller('LoginCtrl', ['$scope', '$http', '$window', '$cookies', 'refreshService', function($scope, $http, $window, $cookies, refreshService) {
     $scope.connector = refreshService;
     $scope.isLoggedIn = refreshService.isLoggedIn ? refreshService.isLoggedIn : false;
     $scope.login = function(){
 	    var username = $scope.username
 	    var password = $scope.password
 	    $http({
-            url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/authenticate',
+            url: 'http://127.0.0.1:5003/app/authenticate',
             method: "GET",
             params: {
                 username: username,
@@ -60,8 +60,10 @@ angular.module('ngSocial.facebook', ['ngRoute'])
                 $scope.connector.id = _id
                 $scope.connector.isLoggedIn = true;
                 $scope.isLoggedIn = true;
+                $cookies.put('_id', _id)
+                $cookies.put('isLoggedIn', $scope.isLoggedIn)
                // $scope.userData = refreshService.refresh(refreshService.id);
-                $window.location.href = '/app/#/facebook';
+                $window.location.href = '/app/#!/facebook';
 		    }
         }, function(response) {
             if(response && response.data)
@@ -74,19 +76,22 @@ angular.module('ngSocial.facebook', ['ngRoute'])
 			$scope.connector.isLoggedIn = false;
 			$scope.isLoggedIn = refreshService.isLoggedIn ? refreshService.isLoggedIn : false;
 			$scope.userData = refreshService.refresh(refreshService.id);
+		    $window.location.href = '/app/#!/login';
+		    $cookies.remove('_id')
+            $cookies.put('isLoggedIn', false)
 		//});
 	}
 }])
-.controller('FacebookCtrl', ['$scope', '$http', 'refreshService', function($scope, $http, refreshService) {
+.controller('FacebookCtrl', ['$scope', '$http', '$cookies', 'refreshService', function($scope, $http, $cookies, refreshService) {
     self = this;
     $scope.connector = refreshService;
     $scope.isLoggedIn = $scope.connector.isLoggedIn;
 	$scope.postStatus = function(){
-		if($scope.isLoggedIn) {
+		if($cookies.get('isLoggedIn')) {
 		    var post = $scope.body;
-		    var _id = $scope.connector.id;
+		    var _id = $cookies.get('_id');
             $http({
-                url: 'http://ec2-18-236-134-110.us-west-2.compute.amazonaws.com:5003/app/feed',
+                url: 'http://127.0.0.1:5003/app/feed',
                 method: "POST",
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
                 data: "post="+ post+"&_id="+_id
@@ -103,6 +108,7 @@ angular.module('ngSocial.facebook', ['ngRoute'])
 	}
 
     self.refresh = function() {
+        $scope.connector.isLoggedIn = $cookies.get('isLoggedIn');
         $scope.connector.refresh($scope.connector.id, function(data) {
             $scope.userData = data;
         });
